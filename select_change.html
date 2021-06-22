@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.8.0/dist/alpine.min.js" defer></script>
+    <title>Change</title>
+</head>
+<body>
+    <div x-data="{foo :'not selected'}">
+        <select @change="foo = $event.target.value">
+          <option x-bind:value="1">option 1</option>
+          <option x-bind:value="2">option 2</option>
+          <option x-bind:value="3">option 3</option>
+        </select>
+        <span x-text="'option '+ foo"></span>
+        <a x-bind:href = "'facebook.com/'+foo">klik</a>
+      </div>
+</body>
+</html>

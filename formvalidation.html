@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://unpkg.com/tailwindcss@1.2.0/dist/tailwind.min.css" />
+  <script src="https://cdn.jsdelivr.net/gh/mattkingshott/iodine@3/dist/iodine.min.js" defer></script>
+  <!--<script src="https://cdn.jsdelivr.net/gh/kevinbatdorf/alpine-inline-devtools@0.12.x/dist/Default.js"></script>-->
+  <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.8.0/dist/alpine.min.js" defer></script>
+  
+  <title>Form Validation wih Alpine and Iodine JS</title>
+</head>
+
+<body class="bg-gray-200">
+  <div class="container mx-auto px-4 xl:px-64 mt-12 mb-12">
+    <form action="" x-data="form()" x-init="init()" @focusout="change" @input="change" @submit="submit">
+      <div class="shadow w-full rounded-lg bg-white overflow-hidden w-full block p-8">
+        <h2 class="font-bold text-2xl mb-6 text-gray-800 border-b pb-2">
+          Form Verification
+        </h2>
+        <div class="flex">
+          <div class="mb-4 w-48 mr-2">
+            <label class="text-gray-800 block mb-1 font-bold text-sm uppercase tracking-wide">Unit Price</label>
+            <input
+              class="text-right mb-1 bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-blue-500"
+              id="unitprice" type="number" name="unitprice" data-rules='["required","numeric"]'
+              x-bind:class="{'border-red-500':unitprice.errorMessage}" />
+            <p x-show="unitprice.errorMessage" x-text="unitprice.errorMessage" class="error-message"></p>
+          </div>
+        </div>
+        <div class="flex">
+          <div class="mb-4 w-full mr-2">
+            <label for="email">Email</label>
+            <input
+              class="text-right mb-1 bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-blue-500"
+              name="email" type="email" id="email" x-bind:class="{'border-red-500':email.errorMessage}"
+              data-rules='["required","email"]' />
+            <p class="error-message" x-show.transition.in="email.errorMessage" x-text="email.errorMessage"></p>
+          </div>
+        </div>
+        <div class="flex">
+          <div class="mb-4 w-full mr-2">
+            <label class="text-gray-800 block mb-1 font-bold text-sm uppercase tracking-wide">Name</label>
+            <input
+              class="mb-1 bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-blue-500"
+              id="nama" name="nama" type="text" data-rules='["required","minimum:8"]'
+              x-bind:class="{'border-red-500':nama.errorMessage}" />
+            <p class="error-message" x-show.transition.in="nama.errorMessage" x-text="nama.errorMessage"></p>
+          </div>
+        </div>
+
+        <div class="flex">
+          <div class="mb-4 w-24 mr-2">
+            <label class="text-gray-800 block mb-1 font-bold text-sm uppercase tracking-wide">Jumlah</label>
+            <input
+              class="mb-1 bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-blue-500"
+              id="jumlah" name="jumlah" type="text" data-rules='["optional","minimum:1"]'
+              x-bind:class="{'border-red-500':jumlah.errorMessage}" />
+            <p class="error-message" x-show.transition.in="jumlah.errorMessage" x-text="jumlah.errorMessage"></p>
+          </div>
+          <div class="mb-4 w-24 mr-2">
+            <label class="text-gray-800 block mb-1 font-bold text-sm uppercase tracking-wide">Satuan</label>           
+            <select id="cmbSatuan" name="cmbSatuan" data-rules='["optional"]' x-bind:class="{'border-red-500':cmbSatuan.errorMessage}" class="mb-1 bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-blue-500"> 
+              <option value="">Kosong</option>
+              <option value="Ada Nilainya">Ada Nilainya</option>
+            </select>
+            <p class="error-message" x-show.transition.in="cmbSatuan.errorMessage" x-text="cmbSatuan.errorMessage"></p>
+          </div>
+        </div>
+
+        <div class="mt-8 text-right">
+          <button type="button"
+            class="bg-white hover:bg-gray-100 text-gray-700 font-semibold py-2 px-4 border border-gray-300 rounded shadow-sm mr-2">
+            Cancel
+          </button>
+          <button type="submit"
+            class="bg-gray-800 hover:bg-gray-700 text-white font-semibold py-2 px-4 border border-gray-700 rounded shadow-sm">
+            Save
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+  <script>
+    //import kingshottIodine from "https://cdn.skypack.dev/@kingshott/iodine";
+    let form = function() {
+      return {
+        required_field_filled: false,
+        rules: [],
+        inputElements: [],
+        init: function () {
+          //Store an array of all the input elements with 'data-rules' attributes
+          this.inputElements = [
+            ...this.$el.querySelectorAll("input[data-rules]"),
+            ...this.$el.querySelectorAll("select[data-rules]"),
+          ];
+          this.initDomData();
+          this.updateErrorMessages();
+        },
+        initDomData: function () {
+          //Create an object attached to the component state for each input element to store its state
+          this.inputElements.map((ele) => {
+            this[ele.name] = {
+              blurred: false,
+            };
+          });
+        },
+        updateErrorMessages: function () {
+          //map throught the input elements and set the 'errorMessage'
+          this.inputElements.map((ele) => {
+            //console.log(ele.name + " Value = " + ele.value + " dataset-rules " + ele.dataset.rules);
+            this[ele.name].errorMessage = this.getErrorMessage(ele);
+          });
+        },
+        getErrorMessage: function (ele) {
+          //Return any server errors if they're present
+          //if (this[ele.name].serverErrors.length > 0) {
+           // return input.serverErrors[0];
+          //}
+          let cmb_satuan_rules = [];
+          let constraint = [];
+
+          if(ele.name === "jumlah" && ele.value > 0){
+            this.required_field_filled = true;
+          }
+          if(ele.name === "cmbSatuan" && this.required_field_filled){
+            cmb_satuan_rules = JSON.parse(ele.dataset.rules);
+            cmb_satuan_rules.push("required");
+            cmb_satuan_rules.shift();   //Remove first array     
+
+            constraint = cmb_satuan_rules; //Make it required after
+          }else{
+            constraint = JSON.parse(ele.dataset.rules);
+          }
+
+          //Check using iodine and return the error message only if the element has not been blurred
+          const error = Iodine.is(ele.value, constraint);
+          if (error !== true && this[ele.name].blurred) {
+            return Iodine.getErrorMessage(error);
+          }
+          //return empty string if there are no errors
+          return "";
+        },
+        submit: function (event) {
+          const invalidElements = this.inputElements.filter((input) => {
+            return (
+              Iodine.is(input.value, JSON.parse(input.dataset.rules)) !== true
+            );
+          });
+          if (invalidElements.length > 0) {
+            event.preventDefault();
+            document.getElementById(invalidElements[0].id).scrollIntoView();
+            //We set all the inputs as blurred if the form has been submitted
+            this.inputElements.map((input) => {
+              this[input.name].blurred = true;
+            });
+            //And update the error messages.
+            this.updateErrorMessages();
+          }
+        },
+        change: function (event) {
+          //Ignore all events that aren't coming from the inputs we're watching
+          if (!this[event.target.name]) {            
+            return false;
+          }
+          if (event.type === "input") {
+            this[event.target.name].serverErrors = [];
+          }
+          if (event.type === "focusout") {
+            this[event.target.name].blurred = true;
+          }
+          //Whether blurred or on input, we update the error messages
+          this.updateErrorMessages();
+        },
+      };
+    };
+  </script>
+</body>
+
+</html>

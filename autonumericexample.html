@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Using Autonumeric js</title>
+</head>
+<body>
+    <form action="" method="post">
+        <table>
+            <tr>
+                <td><label for="nama">Nama</label></td>
+                <td><input type="text" name="nama" id="nama"></td>
+            </tr>
+            <tr>
+                <td><label for="harga">Harga</label></td>
+                <td><input type="text" name="harga" id="hargaaja" value="123848999993"></td>
+            </tr>
+            <tr>
+                <td><label for="harga">Harga 2</label></td>
+                <td><input type="text" name="harga2" id="hargaaja" value="123848999993"></td>
+            </tr>
+            <tr>
+                <td><label for="harga">Harga 3</label></td>
+                <td><input type="text" name="harga3" id="hargamurah" value="123848999993"></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><button type="submit">Tambah</button></td>
+            </tr>
+        </table>
+    </form>
+    <td><button type="button" onclick="onAutoNumber()">Tambah</button></td>
+    <script src="node_modules/autonumeric/dist/autoNumeric.min.js"></script>
+    <script>
+        function onAutoNumber(){
+            AutoNumeric.multiple('#hargaaja',{
+            decimalPlace: '2',
+        })
+        }        
+    </script>
+</body>
+</html>

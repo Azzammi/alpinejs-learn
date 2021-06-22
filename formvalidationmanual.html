@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/tailwindcss@1.2.0/dist/tailwind.min.css" />
+    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.8.0/dist/alpine.min.js" defer></script>
+    <title>Form Validation Manual JS With Alpine</title>
+</head>
+
+<body class="bg-gray-200">
+    <div class="container mx-auto px-4 xl:px-64 mt-12 mb-12">
+        <div class="shadow w-full rounded-lg bg-white overflow-hidden w-full block p-8">
+            <h2>Input your Name and Submit</h2>
+            <form name="form1" action="#" onsubmit="required()">
+                <ul>
+                    <li><input type='text'id="text1"name='text1' class="mb-1 bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-blue-500" /></li>
+                    <li><p class="error-message" x-show.transition.in="email.errorMessage" x-text="email.errorMessage"></p></li>
+                    <li class="rq">*Required Field</li>
+                    <li><input type="submit" name="submit" value="Submit" /></li>
+                    
+                </ul>
+            </form>
+        </div>
+    </div>
+    <script>
+        function required() {
+            var empt = document.form1.text1.value;
+            if (empt === "") {
+                alert("Please input a Value");
+                return false;
+            }
+            else {
+                alert('Code has accepted : you can try another');
+                return true;
+            }
+        }
+    </script>
+</body>
+
+</html>

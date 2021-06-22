@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/tailwindcss@1.2.0/dist/tailwind.min.css">
+    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v1.9.8/dist/alpine.js" defer></script>
+    <title>Modal And X-Ref Apline JS</title>
+</head>
+<body class="bg-gray-200">
+    <h2>Example Modal using Alpine</h2>
+    <div class="container mx-auto px-4 xl:px-64 mt-12 mb-12">
+        <h2 class="text-2xl font-bold">Modal</h2>
+
+        <div x-data="{isOpen: false}">
+            <button
+                @click="isOpen = true  
+                $nextTick(() => $refs.modalCloseButton.focus())"
+                class="bg-blue-700 text-white px-4 py-3 mt-4 text-sm rounded"                   
+            >
+                Open Modal
+            </button>
+
+            <div
+                style="background-color: rgba(0, 0, 0, .5)" 
+                x-show="isOpen"
+                class="mx-auto absolute top-0 left-0 w-full h-full flex items-center shadow-lg overflow-y-auto"          
+            >
+                <div class="container mx-auto rounded p-4 mt-2 overflow-y-auto">
+                    <div class="bg-white rounded px-8 py-8">
+                        <h1 class="font-bold text-2xl mb-3">Modal Title</h1>
+                        <div class="modal-body">
+                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Porro amet repellat recusandae.</p>      
+                        </div>
+                        <div class="mt-4">
+                            <button 
+                                @click="{isOpen = false}" 
+                                x-ref="modalCloseButton"                                
+                                @keydown.escape= "{isOpen=false}" 
+                                class="bg-blue-700 text-white px-4 py-3 mt-4 text-sm rounded">
+                                Close Modal
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

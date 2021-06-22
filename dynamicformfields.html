@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="app.css" rel="stylesheet">
+
+    <!-- To be used during development only -->        
+    <script src="https://cdn.jsdelivr.net/gh/kevinbatdorf/alpine-inline-devtools@0.12.x/dist/Default.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.8.0/dist/alpine.min.js" defer></script>
+    <title>Dynamic Form Field</title>
+    <style>
+        .row {
+            max-width: 80%;
+            margin: 20px auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="row" x-data="dataHandler()">
+        <div class="overflow-x-auto bg-white rounded-lg shadow overflow-y-auto relative mt-3">
+            <div class="flex justify-between">
+                <div></div>
+                <div>
+                    <button type="button" class="btn-info" @click="addNewField()">+ Add Row</button>
+                </div>              
+            </div>
+            <table class="border-collapse table-auto w-full whitespace-nowrap bg-white table-striped relative" id="tab_logic">
+                <thead class="py-2 px-3 sticky top-0 border-b border-gray-200 bg-gray-200 text-lg">
+                    <tr>
+                        <th class="sticky top-0 border-b border-gray-200 px-6 py-2 text-gray-600 font-bold tracking-wider uppercase text-xs">#</th>
+                        <th class="sticky top-0 border-b border-gray-200 px-6 py-2 text-gray-600 font-bold tracking-wider uppercase text-xs">Barang</th>                           
+                        <th class="sticky top-0 border-b border-gray-200 px-6 py-2 text-gray-600 font-bold tracking-wider uppercase text-xs w-1/12">Qty</th>
+                        <th class="sticky top-0 border-b border-gray-200 px-6 py-2 text-gray-600 font-bold tracking-wider uppercase text-xs w-1/12">Harga</th>
+                        <th class="sticky top-0 border-b border-gray-200 px-6 py-2 text-gray-600 font-bold tracking-wider uppercase text-xs w-1/12">Total</th>
+                        <th class="sticky top-0 border-b border-gray-200 px-6 py-2 text-gray-600 font-bold tracking-wider uppercase text-xs w-1/12">Remove</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <template x-for="(field, index) in fields" :key="index">
+                        <tr :id="'addr' + index">
+                            <td x-text="index + 1" class="border-dashed border-t border-gray-200 px-3 py-3 pl-3 text-center"></td>
+                            <td class="border-dashed border-t border-gray-200 px-3 pl-3">
+                                <select id="kd_barang[]" name="kd_barang[]" class="form-control px-2 py-1 border rounded focus:outline-none w-full">
+                                    <option value="01">B01 | Mantap oijoijoijouuuuuuuuuuuuuuoon</option>
+                                </select>
+                                <!--<input x-model="field.kd_barang" type="text" name="kd_barang[]" id="kd_barang[]" class="form-control px-2 py-1 border rounded focus:outline-none w-full">-->
+                            </td>
+                            <td class="border-dashed border-t border-gray-200 px-3 pl-3"><input type="number" x-model="field.qty" type="text" name="qty[]" id="qty[]" class="form-control px-2 py-1 border rounded focus:outline-none w-full"></td>
+                            <td class="border-dashed border-t border-gray-200 px-3 pl-3"><input type="number" x-model="field.harga" type="text" @keyup="itemTotal()" name="harga[]" id="harga[]" class="form-control px-2 py-1 border rounded focus:outline-none w-full"></td>
+                            <td class="border-dashed border-t border-gray-200 px-3 pl-3"><input type="number" x-model="field.qty * field.harga" type="text" name="total[]" id="total[]" class="form-control px-2 py-1 border rounded focus:outline-none w-full" readonly></td>
+                            <td class="border-dashed border-t border-gray-200 px-3 pl-3"><button type="button" class="bg-red-500 text-white duration-200 cursor-pointer py-2 px-8 rounded hover:bg-red-700" @click="removeField(index)">&times;</button></td>
+                        </tr>
+                    </template>
+                </tbody>
+                <tfoot> 
+
+                </tfoot>                
+            </table>
+            <div>
+                <div class="flex justify-between">
+                    <table class="table table-bordered table-hover" id="tab_logic_total">
+                        <tbody>
+                          <tr>
+                            <th>&nbsp</th>
+                            <td></td>
+                          </tr>
+                          <tr>
+                            <th>Tax</th>
+                            <td>
+                                <div class="flex flex-wrap items-stretch w-full mb-4 relative">                                   		
+                                    <input x-model="ppn" type="number" @keyup="countTotal()" class="form-control px-2 py-1 border rounded focus:outline-none" >
+                                    <div class="flex -mr-px">
+                                        <span class="flex items-center leading-normal bg-grey-lighter rounded rounded-l-none border border-l-0 border-grey-light px-3 whitespace-no-wrap text-grey-dark text-sm">%</span>
+                                    </div>	
+                                </div>	
+                            </td>
+                          </tr>
+                          <tr>
+                            <th>Tax Amount</th>
+                            <td><input type="number" name='tax_amount' id="tax_amount" placeholder='0.00' class="form-control px-2 py-1 border rounded focus:outline-none w-full" :value="ppnValue" readonly/></td>
+                          </tr>
+                          <tr>
+                            <th>Grand Total</th>
+                            <td><input type="number" name='total_amount' id="total_amount" placeholder='0.00' class="form-control px-2 py-1 border rounded focus:outline-none w-full" :value="total" readonly/></td>
+                          </tr>
+                        </tbody>
+                    </table>
+                    <table class="table table-bordered table-hover" id="tab_logic_total">
+                        <tbody>
+                          <tr>
+                            <th>Sub Total</th>
+                            <td><input type="number" name='sub_total' placeholder='0.00' class="form-control px-2 py-1 border rounded focus:outline-none w-full" id="sub_total" :value="netTotal" readonly/></td>
+                          </tr>
+                          <tr>
+                            <th>Tax</th>
+                            <td>
+                                <div class="flex flex-wrap items-stretch w-full mb-4 relative">                                   		
+                                    <input x-model="ppn" type="number" @keyup="countTotal()" class="form-control px-2 py-1 border rounded focus:outline-none" >
+                                    <div class="flex -mr-px">
+                                        <span class="flex items-center leading-normal bg-grey-lighter rounded rounded-l-none border border-l-0 border-grey-light px-3 whitespace-no-wrap text-grey-dark text-sm">%</span>
+                                    </div>	
+                                </div>	
+                            </td>
+                          </tr>
+                          <tr>
+                            <th>Tax Amount</th>
+                            <td><input type="number" name='tax_amount' id="tax_amount" placeholder='0.00' class="form-control px-2 py-1 border rounded focus:outline-none w-full" :value="ppnValue" readonly/></td>
+                          </tr>
+                          <tr>
+                            <th>Grand Total</th>
+                            <td><input type="number" name='total_amount' id="total_amount" placeholder='0.00' class="form-control px-2 py-1 border rounded focus:outline-none w-full" :value="total" readonly/></td>
+                          </tr>
+                        </tbody>
+                      </table>
+                </div>                
+              </div>
+        </div>
+        <div class=" "></div>
+    </div>
+</body>
+<script>
+    window.dataHandler = function() {
+        return {    
+        fields: [],
+        netTotal: 0,   
+        ppn:0.0,
+        ppnValue:0.0,
+        total:0,        
+        addNewField() {
+            this.fields.push({
+                kd_barang: '',
+                qty: 0,
+                harga: 0,
+                total: 0
+            });            
+        },
+        removeField(index) {
+            this.fields.splice(index, 1);
+        },        
+        showField() {
+            console.log(this.fields);
+        },
+        itemTotal() {
+            this.netTotal = this.fields.length > 0 ? this.fields.reduce((result,field) => {
+                return result + field.qty * field.harga;
+            }, 0) : 0 ;
+        },
+        countTax(){
+            this.ppnValue = this.netTotal * this.ppn / 100;
+        },
+        countTotal(){
+            this.countTax();
+            this.total = this.netTotal + this.ppnValue;
+        },        
+        numberFormat(amount) {
+            return amount.toLocaleString("en-US", {
+                style: "currency",
+                currency: "INR"
+            });
+        }
+        }   
+    }
+</script>
+</html>

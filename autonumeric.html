@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.js" defer></script>
+    <title>Using Autonumeric js</title>
+</head>
+<body>
+    <div x-data="dataHandler()">
+        <form action="" method="post">
+            <table>
+                <tr>
+                    <td><label for="nama">Nama</label></td>
+                    <td><input type="text" name="nama" id="nama"></td>
+                </tr>
+                <tr>
+                    <td><label for="harga">Harga</label></td>
+                    <td><input type="text" name="harga" id="hargaaja" :value="numberFormat(harga)"></td>
+                </tr>
+                <tr>
+                    <td><label for="harga">Harga 2</label></td>
+                    <td><input type="text" name="harga2" id="hargaaja" :value="formatNumber(harga2)"></td>
+                </tr>
+                <tr>
+                    <td><label for="harga">Harga 3</label></td>
+                    <td><input type="text" name="harga3" id="hargamahal" x-model="formatNumber(harga3)"></td>
+                </tr>                
+                <tr>
+                    <td></td>
+                    <td><button type="submit">Tambah</button></td>
+                    <td><button type="button" onclick="onAutoNumber()">Format</button></td>
+                </tr>
+            </table>
+        </form>        
+    </div>    
+    <script>
+        window.dataHandler = function () {
+        return {
+            fields: [],
+            items: [],
+            netTotal: 0,
+            harga: 25900003,
+            harga2: 123848999993,
+            harga3: 12384893000,
+            formatNumber(value){
+                value = value.toFixed(2).toString().replace(".",",")
+                value = value.replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, "\.")
+                return value
+            },
+            numberFormat(amount) {
+                return amount.toLocaleString("id-ID", {
+                    style: "currency",
+                    currency: "IDR"
+                });
+            }
+        }} 
+    </script>
+</body>
+</html>
